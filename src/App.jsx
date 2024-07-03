@@ -1,5 +1,5 @@
 
-import React, { useCallback, useState, createContext } from 'react';
+import React, { useCallback, useState, createContext,useRef } from 'react';
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -16,6 +16,8 @@ import 'reactflow/dist/style.css';
 import SideBar from './components/SideBar';
 import { CircleNode, ParallelogramNode, RhombusNode, TextFieldNode, RectangleNode } from './Nodes/Node';
 import Popup from './components/Popup';
+
+import { toPng } from 'html-to-image';
 
 const drawingcontext = createContext(null);
 export { drawingcontext };
@@ -37,6 +39,7 @@ export default function App() {
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
   const [selectedEdge, setSelectedEdge] = useState(null);
   const [backgroundVariant, setBackgroundVariant] = useState(BackgroundVariant.Dots);
+  const flowRef = useRef(null);
 
 
 
@@ -126,7 +129,24 @@ export default function App() {
     });
     setNodes(newelement);
   }, [nodes, setNodes]);
-  
+
+
+  const downloadPng = useCallback(() => {
+    if (flowRef.current === null) {
+      return;
+    }
+
+    toPng(flowRef.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.download = 'flowchart.png';
+        link.href = dataUrl;
+        link.click();
+      })
+      .catch((err) => {
+        console.error('Could not generate image', err);
+      });
+  }, [flowRef]);
 
   return (
     <drawingcontext.Provider value={{ insertText, insertrect, insertcircle, insertPara, insertRhombus,setIsPopupVisible ,setshapetext,shapetext,shapeSelected, setShapeSelected,setBackgroundColor,setEdgeColor,setBackgroundVariant}}>
@@ -147,12 +167,35 @@ export default function App() {
             onEdgeClick={onEdgeClick}
 
             style={{ background: backgroundColor}}
+            ref={flowRef}
+
           >
             <Controls />
             <MiniMap />
             <Background variant={backgroundVariant} gap={12} size={1} />
 
           </ReactFlow>
+      
+
+          <button       onClick={downloadPng}
+
+            style={{
+              position: 'absolute',
+              top: 20,
+              right: 20,
+              padding: '10px 20px',
+              backgroundColor: '#007bff',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+            }}
+          >
+                    Download
+ 
+          </button>
+
+
           {selectedEdge && (
             <div className="absolute top-10 left-50 p-4 bg-white shadow-lg z-10 flex-col gap-2 ">
                <h1 className='mb-2 text-300'>Choose Color</h1>
