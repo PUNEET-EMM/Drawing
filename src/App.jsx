@@ -36,9 +36,11 @@ export default function App() {
   const [shapeSelected, setShapeSelected] = useState('');
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
   const [selectedEdge, setSelectedEdge] = useState(null);
+  const [backgroundVariant, setBackgroundVariant] = useState(BackgroundVariant.Dots);
 
 
-  const [edgeColor, setEdgeColor] = useState('#000'); // State to track edge color
+
+  const [edgeColor, setEdgeColor] = useState('#000');
 
   
   const onConnect = useCallback(
@@ -127,14 +129,14 @@ export default function App() {
   
 
   return (
-    <drawingcontext.Provider value={{ insertText, insertrect, insertcircle, insertPara, insertRhombus,setIsPopupVisible ,setshapetext,shapetext,shapeSelected, setShapeSelected,setBackgroundColor,setEdgeColor}}>
+    <drawingcontext.Provider value={{ insertText, insertrect, insertcircle, insertPara, insertRhombus,setIsPopupVisible ,setshapetext,shapetext,shapeSelected, setShapeSelected,setBackgroundColor,setEdgeColor,setBackgroundVariant}}>
       <div className="flex h-screen w-screen">
      
         <SideBar />
         
         
 
-      <div className="w-3/4 p-0 flex-grow  m-0 ">
+      <div className="w-3/4 p-0 flex-grow  h-screen m-0 ">
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -148,8 +150,8 @@ export default function App() {
           >
             <Controls />
             <MiniMap />
-          
-            <Background variant="dots" gap={12} size={1} />
+            <Background variant={backgroundVariant} gap={12} size={1} />
+
           </ReactFlow>
           {selectedEdge && (
             <div className="absolute top-10 left-50 p-4 bg-white shadow-lg z-10 flex-col gap-2 ">

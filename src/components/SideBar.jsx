@@ -8,7 +8,7 @@ const SideBar = () => {
   const [isBackgroundColorPickerVisible, setIsBackgroundColorPickerVisible] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const { setIsPopupVisible, setShapeSelected ,setBackgroundColor ,setEdgeColor} = useContext(drawingcontext);
+  const { setIsPopupVisible, setShapeSelected ,setBackgroundColor ,setEdgeColor,setBackgroundVariant} = useContext(drawingcontext);
 
   const [color, setColor] = useState('#000');
   
@@ -38,6 +38,12 @@ const SideBar = () => {
     await setShapeSelected('textfield');
     setIsPopupVisible(true);
   };
+ 
+
+  const handleVariantChange = (event) => {
+    setBackgroundVariant(event.target.value);
+  };
+
 
   return (
     <>
@@ -95,7 +101,7 @@ const SideBar = () => {
           </div>
           <div className="flex justify-between mb-2">
             <h4 className="font-normal text-white">Variant</h4>
-            <select className="ml-4 bg-gray-700 text-white font-medium">
+            <select onChange={handleVariantChange} className="ml-4 bg-gray-700 text-white font-medium">
               <option value="lines">Line</option>
               <option value="dots">Dots</option>
             </select>

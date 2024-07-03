@@ -57,6 +57,9 @@ const ParallelogramNode = ({ data }) => {
     transform: 'skew(-20deg)'
   };
   const customNodeStylesParallelogram = {
+    display:'flex',
+    justifyContent:'center',
+    alignItems:'center',
     height: '5rem',
     width: '8rem',
     padding: '10px 30px',
@@ -96,6 +99,9 @@ const TextFieldNode = ({ data }) => {
 
 const RectangleNode = ({ data }) => {
   const customNodeStylesRectangle = {
+    display:'flex',
+    justifyContent:'center',
+    alignItems:'center',
     height: '5rem',
     width: '8rem',
     padding: '1rem',
