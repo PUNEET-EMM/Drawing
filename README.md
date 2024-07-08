@@ -29,6 +29,13 @@ cd Drawing
 ```sh
 npm install
 ```
+### Running the Application
+```sh
+npm start
+
+```
+ The application will be available at http://localhost:3000.
+
 
 
 
