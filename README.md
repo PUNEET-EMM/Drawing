@@ -21,15 +21,18 @@ This is a React-based web application that allows users to create flowcharts wit
 ### Clone the Repository
 
 ```sh
-git https://github.com/PUNEET-EMM/Drawing.git
+git clone https://github.com/PUNEET-EMM/Drawing.git
 cd Drawing
+```
 
-###Install Dependencies
-
+### Install Dependencies
+```sh
 npm install
-### Running the Application
+```
 
-npm start
+
+
+
 
 
 
