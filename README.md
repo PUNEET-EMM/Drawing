@@ -29,7 +29,7 @@ cd Drawing
 npm install
 ### Running the Application
 
-Running the Application
+npm start
 
 
 
