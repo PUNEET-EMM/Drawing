@@ -1,8 +1,35 @@
-# React + Vite
+# React Flowchart Builder with Authentication
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a React-based web application that allows users to create flowcharts with various shapes and features. Users can register, log in, save their projects, and download their flowcharts as images.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- User Authentication (Login and Register)
+- Create flowcharts with different shapes: Circle, Rectangle, Parallelogram, Rhombus, and Text Field
+- Drag and connect nodes
+- Change the color of nodes and edges
+- Download the flowchart as an image
+- Responsive design suitable for both desktop and mobile devices
+
+## Installation
+
+### Prerequisites
+
+- Node.js (>= 12.x)
+- npm (>= 6.x)
+
+### Clone the Repository
+
+```sh
+git https://github.com/PUNEET-EMM/Drawing.git
+cd Drawing
+
+###Install Dependencies
+
+npm install
+### Running the Application
+
+Running the Application
+
+
+
