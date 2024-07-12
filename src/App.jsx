@@ -265,7 +265,7 @@ export default function App() {
             style={{
               position: 'absolute',
               top: 16,
-              right: 84,
+              right: 95,
               padding: '5px 10px',
               backgroundColor: '#007bff',
               color: '#ffffff',
@@ -274,7 +274,7 @@ export default function App() {
               cursor: 'pointer',
             }}
           >
-                 View Project
+               View Project
 
           </button>}
       
@@ -283,7 +283,7 @@ export default function App() {
       
 
 
-          <button       onClick={downloadPng}
+          <button    onClick={downloadPng}
 
             style={{
               position: 'absolute',
@@ -308,7 +308,7 @@ export default function App() {
             style={{
               position: 'absolute',
               top: 65,
-              right: 180,
+              right: 200,
               padding: '5px 10px',
               backgroundColor: '#007bff',
               color: '#ffffff',
