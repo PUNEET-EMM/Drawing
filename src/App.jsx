@@ -1,5 +1,5 @@
 
-import React, { useCallback, useState, createContext,useRef } from 'react';
+import React, { useCallback, useState, createContext,useRef, useContext } from 'react';
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -10,6 +10,8 @@ import ReactFlow, {
   BackgroundVariant,
 } from 'reactflow';
 import { TwitterPicker } from 'react-color';
+import { UserContext } from './context/UserContext';
+import { ProjectContext } from './context/ProjectContext';
 
 
 import 'reactflow/dist/style.css';
@@ -18,11 +20,19 @@ import { CircleNode, ParallelogramNode, RhombusNode, TextFieldNode, RectangleNod
 import Popup from './components/Popup';
 
 import { toPng } from 'html-to-image';
+import AuthPopup from './components/AuthPopup';
+import ProjectPopup from './components/ProjectPopup';
+import apiRequest from './api/apiRequest';
+
 
 const drawingcontext = createContext(null);
 export { drawingcontext };
 
+
+
+
 const initialEdges = [];
+const initialNodes = [];
 
 const nodeTypes = { circle: CircleNode, rhombus: RhombusNode, parallelogram: ParallelogramNode, textfield: TextFieldNode, rectangle: RectangleNode };
 
@@ -30,10 +40,22 @@ const nodeTypes = { circle: CircleNode, rhombus: RhombusNode, parallelogram: Par
 
 
 export default function App() {
-  const initialNodes = [];
+
+  const {user, logoutUser} = useContext(UserContext);
+  
+
+
+ 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [isAuthPopupVisible, setIsAuthPopupVisible] = useState(false); 
+  const [isProjectPopup, setIsProjectPopup] = useState(false);
+  const [showSavePopup, setShowSavePopup] = useState(false);
+  const [projectName, setProjectName] = useState('');
+
+
   const [shapetext, setshapetext] = useState('');
   const [shapeSelected, setShapeSelected] = useState('');
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
@@ -45,11 +67,26 @@ export default function App() {
 
   const [edgeColor, setEdgeColor] = useState('#000');
 
+
+  const load = async (projectId) => {
+    try {
+      const  project = await apiRequest.get(`/projects/${projectId}`); 
+      setNodes(project.data.nodes || []);
+      setEdges(project.data.edges || []);    
+      
+      setIsProjectPopup(false); 
+    } catch (error) {
+      console.error('Error loading project:', error);
+    }
+  };
+
+  // const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
+
   
-  const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge({ ...params, style: { stroke: edgeColor } }, eds)),
-    [setEdges, edgeColor],
-  );
+  // const onConnect = useCallback(
+  //   (params) => setEdges((eds) => addEdge({ ...params, style: { stroke: edgeColor } }, eds)),
+  //   [setEdges, edgeColor],
+  // );
 
 
   // const onConnect = useCallback(
@@ -57,8 +94,15 @@ export default function App() {
   //   [setEdges],
   // );
 
-
-
+  const onConnect = useCallback((params) => {
+    setEdges((eds) => {
+      if (!Array.isArray(eds)) {
+        console.error('Edges state is not an array:', eds);
+        return [];
+      }
+      return addEdge(params, eds);
+    });
+  }, []);
 
   const onEdgeClick = useCallback((event, edge) => {
     event.stopPropagation();
@@ -148,8 +192,28 @@ export default function App() {
       });
   }, [flowRef]);
 
+
+
+  const saveProject = async () => {
+    const projectData = {
+      name: projectName || 'Untitled Project',
+      nodes: nodes,
+      edges: edges,
+    };
+
+    try {
+      await apiRequest.post('/projects/save', projectData);
+      alert('Project saved successfully!');
+      setShowSavePopup(false); // Close the popup after saving
+    } catch (error) {
+      console.error('Error saving project', error);
+      alert('Failed to save project');
+    }
+  };
+ 
+  
   return (
-    <drawingcontext.Provider value={{ insertText, insertrect, insertcircle, insertPara, insertRhombus,setIsPopupVisible ,setshapetext,shapetext,shapeSelected, setShapeSelected,setBackgroundColor,setEdgeColor,setBackgroundVariant}}>
+    <drawingcontext.Provider value={{ insertText, insertrect, insertcircle, insertPara, insertRhombus,setIsPopupVisible ,setshapetext,shapetext,shapeSelected, setShapeSelected,setBackgroundColor,setEdgeColor,setBackgroundVariant,setIsAuthPopupVisible,setIsProjectPopup}}>
       <div className="flex h-screen w-screen">
      
         <SideBar />
@@ -175,15 +239,16 @@ export default function App() {
             <Background variant={backgroundVariant} gap={12} size={1} />
 
           </ReactFlow>
-      
 
-          <button       onClick={downloadPng}
 
+          <button
+            onClick={() => user ? logoutUser() : setIsAuthPopupVisible(true)} 
             style={{
               position: 'absolute',
-              top: 20,
+              top: 16,
               right: 20,
-              padding: '10px 20px',
+              padding: '5px 10px',
+
               backgroundColor: '#007bff',
               color: '#ffffff',
               border: 'none',
@@ -191,11 +256,75 @@ export default function App() {
               cursor: 'pointer',
             }}
           >
-                    Download
+             {user ? 'Logout' : 'Login / Register'}
+
+          </button>
+
+          {user&& <button
+           onClick={()  =>setIsProjectPopup(true)} 
+            style={{
+              position: 'absolute',
+              top: 16,
+              right: 180,
+              padding: '5px 10px',
+              backgroundColor: '#007bff',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+            }}
+          >
+                 View Project
+
+          </button>}
+      
+            
+
+      
+
+
+          <button       onClick={downloadPng}
+
+            style={{
+              position: 'absolute',
+              top: 65,
+              right: 20,
+              padding: '5px 10px',
+              backgroundColor: '#007bff',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+            }}
+          >
+                    Download Project
  
           </button>
 
 
+
+          {user&&<button
+           onClick={() => setShowSavePopup(true)}
+            style={{
+              position: 'absolute',
+              top: 65,
+              right: 180,
+              padding: '5px 10px',
+              backgroundColor: '#007bff',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+            }}
+          >
+                 Save Project
+
+          </button>}
+
+
+          
+
+          
           {selectedEdge && (
             <div className="absolute top-10 left-50 p-4 bg-white shadow-lg z-10 flex-col gap-2 ">
                <h1 className='mb-2 text-300'>Choose Color</h1>
@@ -204,10 +333,47 @@ export default function App() {
                 onChangeComplete={onEdgeColorChange}
               />
             </div>
+
+
           )}
         </div>
       </div>
+      
+      {isProjectPopup&&<ProjectPopup  onSelectProject={load}/>}
+      {isAuthPopupVisible && <AuthPopup/>}
       {isPopupVisible && <Popup />}
+
+
+
+      {showSavePopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg shadow-md relative">
+            <button
+              className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
+              onClick={() => setShowSavePopup(false)}
+            >
+              x
+            </button>
+            <div className="mb-4">
+              <h3 className="text-lg font-medium">Save Project</h3>
+              <input
+                type="text"
+                placeholder="Enter project name"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+              onClick={saveProject}
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      )}
+
     </drawingcontext.Provider>
   );
 }
