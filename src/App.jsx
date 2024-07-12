@@ -265,7 +265,7 @@ export default function App() {
             style={{
               position: 'absolute',
               top: 16,
-              right: 95,
+              right: 96,
               padding: '5px 10px',
               backgroundColor: '#007bff',
               color: '#ffffff',
@@ -308,7 +308,7 @@ export default function App() {
             style={{
               position: 'absolute',
               top: 65,
-              right: 200,
+              right: 230,
               padding: '5px 10px',
               backgroundColor: '#007bff',
               color: '#ffffff',
